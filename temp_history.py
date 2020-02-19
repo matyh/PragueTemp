@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 # load the file into DataFrame
-file = './TempPrecData.csv'
+file = 'TempData.csv'
 df: pd.DataFrame = pd.read_csv(file)
 
 # replace comas in the DataFrame with dots and convert to numbers
@@ -20,6 +20,7 @@ del df['day']
 del df['SRA']
 
 
+# MAKE PLOT
 fig, ax = plt.subplots()
 plt.subplot(projection='polar')
 ln, = plt.plot([], [])
@@ -32,34 +33,17 @@ rad_months = df.copy()
 rad_months.update(rad_months['month'].apply(lambda x: np.deg2rad(360 / 12 * x)))
 plt.thetagrids(np.linspace(360 / 12, 360, len(df['month'].unique())), df['month'].unique())
 
-xdata, ydata = pd.Series(dtype=int), pd.Series(dtype=np.float64)
+xdata, ydata = pd.Series(dtype=np.float64), pd.Series(dtype=np.float64)
 
 
 def update(frame):
     global xdata, ydata
 
-    xdata = xdata.append(rad_months.loc[rad_months['year'] == frame]['month'])  # DND
-    ydata = ydata.append(rad_months.loc[rad_months['year'] == frame]['T-AVG'])  # DND
+    xdata = xdata.append(pd.Series(rad_months.iloc[frame]['month']))  # DND
+    ydata = ydata.append(pd.Series(rad_months.iloc[frame]['T-AVG']))  # DND
     ln.set_data(xdata, ydata)  # DND
     return ln,
 
-ani = FuncAnimation(fig, update, frames=df['year'].unique(), interval=20, blit=True)
+
+ani = FuncAnimation(fig, update, frames=range(0, len(rad_months)), interval=20, blit=True)
 plt.show()
-
-
-def init():
-    ax.set_xlim(0, 2 * np.pi)
-    ax.set_ylim(-1, 1)
-    return ln,
-
-
-def update(frame):
-    xdata.append(frame)
-    ydata.append(np.sin(frame))
-    ln.set_data(xdata, ydata)
-    return ln,
-
-
-ani = FuncAnimation(fig, update, frames=np.linspace(0, 2 * np.pi, 128),
-                    init_func=init, blit=True, interval=12)
-# plt.show()
