@@ -39,11 +39,40 @@ xdata, ydata = pd.Series(dtype=np.float64), pd.Series(dtype=np.float64)
 def update(frame):
     global xdata, ydata
 
-    xdata = xdata.append(pd.Series(rad_months.iloc[frame]['month']))  # DND
-    ydata = ydata.append(pd.Series(rad_months.iloc[frame]['T-AVG']))  # DND
-    ln.set_data(xdata, ydata)  # DND
+    xdata = xdata.append(pd.Series(rad_months.iloc[frame]['month']))
+    ydata = ydata.append(pd.Series(rad_months.iloc[frame]['T-AVG']))
+    ln.set_data(xdata, ydata)
     return ln,
 
 
-ani = FuncAnimation(fig, update, frames=range(0, len(rad_months)), interval=20, blit=True)
+xdata2, ydata2 = [], []
+
+
+def update2(frame):
+    global xdata2, ydata2
+
+    ydata2.append(rad_months.iloc[frame]['T-AVG'])
+    xdata2.append(rad_months.iloc[frame]['month'])
+    ln.set_data(xdata2, ydata2)
+    return ln,
+
+
+def test():
+    ani = FuncAnimation(fig, update, frames=range(0, len(rad_months)), interval=5, blit=True)
+    return ani
+
+
+def test2():
+    ani = FuncAnimation(fig, update2, frames=range(0, len(rad_months)), interval=5, blit=True)
+    return ani
+
+test2()
 plt.show()
+
+
+# from timeit import timeit
+# t2 = timeit("test2()", "from __main__ import test2", number=10000)
+# t = timeit("test()", "from __main__ import test", number=10000)
+#
+# print("first solution is:", t)
+# print("secon solution is:", t2)
